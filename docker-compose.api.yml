@@ -1,0 +1,15 @@
+version: '3.0'
+services:
+
+    api:
+        build: ./api
+        image: castiel-api
+        container_name: castiel-api
+        volumes:
+            - ./api/src:/home/src
+        expose:
+            - 8443
+        ports:
+            - "8443:443"
+        environment:
+            - MONGOURL=mongodb://db.castiel_default:29200/default

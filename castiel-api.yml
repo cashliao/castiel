@@ -1,0 +1,180 @@
+swagger: "2.0"
+info:
+  description: "寶島義工團報名服務API"
+  version: "1.0.0"
+  title: "寶島義工團報名服務"
+  contact:
+    email: "cash.liao@gmail.com"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "dev.cashlab.idv.tw"
+basePath: "/signup"
+tags:
+- name: "mission"
+  description: "任務相關"
+- name: "signup"
+  description: "報名相關"
+schemes:
+- "https"
+paths:
+  /mission:
+    post:
+      tags:
+      - "mission"
+      summary: "建立新任務"
+      operationId: "createMission"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "任務內容"
+        required: true
+        schema:
+          $ref: "#/definitions/Mission"
+      responses:
+        405:
+          description: "不合法的輸入"
+    put:
+      tags:
+      - "mission"
+      summary: "更新任務內容"
+      description: ""
+      operationId: "updateMission"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/xml"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "任務內容"
+        required: true
+        schema:
+          $ref: "#/definitions/Mission"
+      responses:
+        400:
+          description: "不合法的任務代碼"
+        404:
+          description: "找不到任務"
+        405:
+          description: "不合法的輸入"
+  /mission/findByStatus:
+    get:
+      tags:
+      - "mission"
+      summary: "依狀態取得任務清單"
+      description: "可用逗號區隔多個狀態字串"
+      operationId: "findMissionsByStatus"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "status"
+        in: "query"
+        description: "作為篩選條件的狀態"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+          enum:
+          - "pending"
+          - "opened"
+          - "closed"
+          - "completed"
+          default: "pending,opened,closed"
+        collectionFormat: "multi"
+      responses:
+        200:
+          description: "成功"
+          schema:
+            type: "array"
+            items:
+              $ref: "#/definitions/Mission"
+        400:
+          description: "不合法的狀態"
+  /mission/{missionId}:
+    get:
+      tags:
+      - "mission"
+      summary: "依據任務代碼尋找任務"
+      description: "返回單一任務"
+      operationId: "getMissionById"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "missionId"
+        in: "path"
+        description: "任務代碼"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        200:
+          description: "成功"
+          schema:
+            $ref: "#/definitions/Mission"
+        400:
+          description: "不合法的任務代碼"
+        404:
+          description: "找不到任務"
+    delete:
+      tags:
+      - "mission"
+      summary: "刪除任務"
+      description: ""
+      operationId: "deleteMission"
+      produces:
+      - "application/json"
+      parameters:
+      - name: "api_key"
+        in: "header"
+        required: false
+        type: "string"
+      - name: "missionId"
+        in: "path"
+        description: "要刪除的任務代碼"
+        required: true
+        type: "integer"
+        format: "int64"
+      responses:
+        400:
+          description: "不合法的任務代碼"
+        404:
+          description: "找不到任務"
+securityDefinitions:
+  mission_auth:
+    type: "oauth2"
+    authorizationUrl: "http://petstore.swagger.io/oauth/dialog"
+    flow: "implicit"
+    scopes:
+      write:pets: "modify pets in your account"
+      read:pets: "read your pets"
+  api_key:
+    type: "apiKey"
+    name: "api_key"
+    in: "header"
+definitions:
+  Mission:
+    type: "object"
+    required:
+    - "name"
+    properties:
+      id:
+        type: "integer"
+        format: "int64"
+        description: "任務代碼"
+      name:
+        type: "string"
+        example: "嘉義水上鄉三界新建案前置"
+        description: "任務名稱"
+      status:
+        type: "string"
+        description: "任務的狀態"
+        enum:
+        - "pending"
+        - "opened"
+        - "closed"
+        - "completed"

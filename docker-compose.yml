@@ -1,0 +1,42 @@
+version: '3.0'
+services:
+
+    web:
+        build: ./web
+        image: castiel-web
+        container_name: castiel-web
+        volumes:
+            - ./web/src:/home/web/src
+        expose:
+            - 80
+        ports:
+            - "80:80"
+        environment:
+            - APP_NAME=資訊系統
+            - API_URL=http://app.castiel_default:8080/api
+            - OAUTH_CLIENT_ID
+    api:
+        build: ./api
+        image: castiel-api
+        container_name: castiel-api
+        volumes:
+            - ./api/src:/home/src
+        expose:
+            - 8443
+        ports:
+            - "8443:443"
+        environment:
+            - MONGOURL=mongodb://db.castiel_default:29200/default
+
+    db:
+        build: ./db
+        image: castiel-db
+        container_name: castiel-db
+        expose:
+            - 29200
+        ports:
+            - "29200:27017"
+        volumes:
+            - ./db/data:/db/data
+            - ./db/config:/db/config
+

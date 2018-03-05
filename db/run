@@ -1,0 +1,20 @@
+while getopts "rbcd" opt
+do
+if [ $opt = "r" ]
+then
+  docker run -d -v=workingjournal-data:/data/db -p=27017:27017 --name=data --network=workingjournal_network gcr.io/yuantatest-170801/workingjournal-data
+fi
+if [ $opt = "b" ]
+then
+  docker build -t=gcr.io/yuantatest-170801/workingjournal-data .
+fi
+if [ $opt = "c" ]
+then
+  docker stop data
+  docker rm data
+fi
+if [ $opt = "d" ]
+then
+  docker rmi gcr.io/yuantatest-170801/workingjournal-data
+fi
+done

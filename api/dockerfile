@@ -1,0 +1,26 @@
+FROM ubuntu:latest
+MAINTAINER cash.liao "cash.liao@gmail.com"
+
+RUN apt-get update \
+  && apt-get install -y python3-pip python3-dev \
+  && cd /usr/local/bin \
+  && ln -s /usr/bin/python3 python \
+  && pip3 install --upgrade pip
+
+ENV LANG en_US.UTF-8
+RUN mkdir /home/src
+WORKDIR /home/src
+VOLUME /home/src
+
+RUN pip install httplib2 \
+  && pip install pandas \
+  && pip install numpy \
+  && pip install --upgrade google-api-python-client \
+  && pip install flask \
+  && pip install future \
+  && pip install requests 
+
+ADD ./locale /etc/default/locale
+EXPOSE 8443
+ENTRYPOINT ["python3","app.py"]
+

@@ -1,0 +1,40 @@
+FROM ubuntu
+MAINTAINER cash.liao@gmail.com
+
+ENV NVM_DIR /usr/local/nvm
+ENV NODE_VERSION 9.3.0
+ENV NODE_PATH $NVM_DIR/v$NODE_VERSION/lib/node_modules
+ENV NPM_DIR $NVM_DIR/versions/node/v$NODE_VERSION/bin
+ENV PATH $NVM_DIR:$NPM_DIR:$PATH
+
+RUN apt-get update
+RUN rm -f /bin/sh && ln -s /bin/bash /bin/sh
+
+# Set debconf to run non-interactively
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+# Install base dependencies
+RUN apt-get update && \
+    apt-get install -y -q --no-install-recommends \
+        build-essential \
+        curl \
+        git \
+        libssl-dev \
+        ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install nvm with node and npm
+RUN mkdir $NVM_DIR
+RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | bash \
+    && . $NVM_DIR/nvm.sh \
+    && nvm install $NODE_VERSION \
+    && nvm alias default $NODE_VERSION \
+    && nvm use default
+RUN npm install --save-dev babel-core babel-eslint babel-loader babel-preset-env babel-preset-react html-webpack-plugin webpack webpack-dev-server
+WORKDIR /home/web
+ADD ./package.json .
+RUN npm install
+ADD ./webpack.config.js .
+RUN mkdir ./src
+EXPOSE 80
+CMD ["npm","run","dev"]
