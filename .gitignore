@@ -1,0 +1,5 @@
+*.pyc
+api/src/.secret/
+api/src/client_secret.json
+api/src/m1.csv
+api/src/o1.csv
