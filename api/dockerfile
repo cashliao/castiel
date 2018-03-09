@@ -20,7 +20,7 @@ RUN pip install httplib2 \
   && pip install future \
   && pip install requests 
 
-ADD ./locale /etc/default/locale
-EXPOSE 8443
+ADD ./src/client_secret.json .
+EXPOSE 80
 ENTRYPOINT ["python3","app.py"]
 
